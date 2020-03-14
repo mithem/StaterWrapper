@@ -1,0 +1,30 @@
+{
+  "python.testing.pytestArgs": ["."],
+  "python.testing.unittestEnabled": false,
+  "python.testing.nosetestsEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "sqltools.connections": [
+    {
+      "connectionTimeout": 10,
+      "database": "helix",
+      "dialect": "MySQL",
+      "isActive": true,
+      "isConnected": true,
+      "name": "Helix",
+      "password": "helix_wrapper007",
+      "port": 3306,
+      "server": "localhost",
+      "username": "helix_db_wrapper"
+    },
+    {
+      "connectionTimeout": 10,
+      "database": "stater",
+      "dialect": "MySQL",
+      "name": "Stater",
+      "password": "stater_wrapper007",
+      "port": 3306,
+      "server": "localhost",
+      "username": "stater_db_wrapper"
+    }
+  ]
+}
