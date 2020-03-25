@@ -3,12 +3,16 @@
 import requests
 import json
 
-version = "0.0.0"
+version = "0.0.1"
 
 server_name: str = None
 server_password: str = None
 
 _url = "http://helix2.ddns.net/stater/"
+
+
+class ConnectionTimeout(Exception):
+    """raised when the connection to the server timed out (6.05s)"""
 
 
 def check_config():
@@ -122,15 +126,19 @@ def change_server(name: str = None, description: str = None, repo_url: str = Non
         if type(password) != str:
             raise TypeError("password expected to be of type str.")
         payload["newPassword"] = password
-    r = requests.post(_url + "api/changeserver", json.dumps(payload))
-    if r.status_code == 200:
-        if name != None:
-            server_name = name
-        if password != None:
-            server_password = password
-        return True
-    else:
-        return (False, r.status_code, r.text)
+    try:
+        r = requests.post(_url + "api/changeserver",
+                          json.dumps(payload), timeout=3.05)
+        if r.status_code == 200:
+            if name != None:
+                server_name = name
+            if password != None:
+                server_password = password
+            return True
+        else:
+            return (False, r.status_code, r.text)
+    except requests.exceptions.ConnectTimeout:
+        raise ConnectionTimeout
 
 
 def update_component(component: str, status: int):
@@ -143,8 +151,12 @@ def update_component(component: str, status: int):
             "status need to be of type int. See docs for possible values.")
     payload = {"name": server_name, "password": server_password,
                "component": component, "status": status}
-    r = requests.post(_url + "api/updatecomponent", json.dumps(payload))
-    if r.status_code == 200:
-        return True
-    else:
-        return (False, r.status_code, r.text)
+    try:
+        r = requests.post(_url + "api/updatecomponent",
+                          json.dumps(payload), timeout=6.05)
+        if r.status_code == 200:
+            return True
+        else:
+            return (False, r.status_code, r.text)
+    except requests.exceptions.ConnectTimeout:
+        raise ConnectionTimeout
